@@ -1,0 +1,21 @@
+version: "3.3"
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: docker/dev.dockerfile
+    volumes:
+      - ".:/go/src/github.com/marwan-at-work/debug-pubsub"
+    environment:
+      - PUBSUB_EMULATOR_HOST=http://pubsub:8085
+      - PUBSUB_PROJECT_ID=marwan-test
+      - GODEBUG=http2debug=2
+
+    depends_on:
+      - pubsub
+  pubsub:
+    image: google/cloud-sdk
+    ports:
+      - '8085:8085'
+    command: ["gcloud", "beta", "emulators", "pubsub", "start", "--host-port", "0.0.0.0:8085", "--verbosity=debug"]
+
